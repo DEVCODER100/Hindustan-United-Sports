@@ -87,3 +87,159 @@ const header = document.querySelector('.site-header');
 addEventListener('scroll', () => {
   header.style.boxShadow = scrollY > 8 ? '0 8px 24px -16px rgba(0,0,0,.35)' : 'none';
 });
+
+// ===== Training / Drills engine =====
+const DATA = (typeof DATA_ACADEMY_REPOSITORY !== 'undefined') ? DATA_ACADEMY_REPOSITORY : null;
+const grid = document.getElementById('drillsGrid');
+
+if (DATA && grid) {
+  const tabsEl = document.getElementById('trainingTabs');
+  const filtersEl = document.getElementById('drillFilters');
+  const moreBtn = document.getElementById('drillsMoreBtn');
+  const moreWrap = moreBtn ? moreBtn.parentElement : null;
+
+  const billboard = {
+    badge: document.getElementById('billboard-badge'),
+    title: document.getElementById('billboard-title'),
+    desc: document.getElementById('billboard-desc'),
+    meta: document.getElementById('billboard-meta'),
+  };
+
+  let mode = 'drills';      // active tab
+  let category = 'all';     // active drill filter
+  let expanded = false;     // show-all toggle
+  const LIMIT = 9;
+
+  const titleCase = (s) => s.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+  function setBillboard(key) {
+    const b = DATA[key] && DATA[key].billboard;
+    if (!b) return;
+    // Drills tab: auto-rotate a random drill into the billboard each render
+    if (key === 'drills') {
+      const cards = DATA.drills.cards;
+      const r = cards[Math.floor(Math.random() * cards.length)];
+      billboard.badge.innerHTML = '<i class="dot"></i> TODAY\'S DRILL · AUTO-ROTATING';
+      billboard.title.textContent = r.title;
+      billboard.desc.textContent = r.desc;
+      billboard.meta.innerHTML = [titleCase(r.category), r.time, r.diff].map(m => `<span>${m}</span>`).join('');
+      return;
+    }
+    billboard.badge.innerHTML = '<i class="dot"></i> ' + b.badge.replace(/<[^>]*>/g, '').trim();
+    billboard.title.textContent = b.title;
+    billboard.desc.textContent = b.desc;
+    billboard.meta.innerHTML = (b.meta || []).map(m => `<span>${m}</span>`).join('');
+  }
+
+  function cardHTML(card) {
+    const clickable = card.id ? `data-id="${card.id}" tabindex="0" role="button"` : '';
+    return `
+      <article class="drill-card ${card.id ? 'is-clickable' : ''}" ${clickable}>
+        <div class="drill-card-top">
+          <h4>${card.title}</h4>
+          <p>${card.desc}</p>
+        </div>
+        <div class="drill-card-foot">
+          <span class="badge-time">⏱ ${card.time}</span>
+          <span class="badge-diff ${card.class || 'bd-intermediate'}">${card.diff}</span>
+        </div>
+      </article>`;
+  }
+
+  function visibleCards() {
+    let cards = DATA[mode].cards.slice();
+    if (mode === 'drills' && category !== 'all') {
+      cards = cards.filter(c => c.category === category);
+    }
+    return cards;
+  }
+
+  function render() {
+    setBillboard(mode);
+    const all = visibleCards();
+    const showAll = expanded || mode !== 'drills';
+    const shown = showAll ? all : all.slice(0, LIMIT);
+
+    grid.innerHTML = shown.length
+      ? shown.map(cardHTML).join('')
+      : `<p class="drills-empty">No resources available for this selection.</p>`;
+
+    // wire clicks
+    grid.querySelectorAll('.drill-card.is-clickable').forEach(el => {
+      el.addEventListener('click', () => openDrill(el.dataset.id));
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') openDrill(el.dataset.id); });
+    });
+
+    // show/hide "view all"
+    if (moreWrap) {
+      if (mode === 'drills' && all.length > LIMIT) {
+        moreWrap.style.display = 'flex';
+        moreBtn.textContent = expanded ? 'Show Less' : `View All Drills (${all.length})`;
+      } else {
+        moreWrap.style.display = 'none';
+      }
+    }
+    // filter chips only for drills tab
+    if (filtersEl) filtersEl.style.display = (mode === 'drills') ? 'flex' : 'none';
+  }
+
+  // Tabs
+  if (tabsEl) tabsEl.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-tab]');
+    if (!btn) return;
+    tabsEl.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.tab;
+    expanded = false;
+    render();
+  });
+
+  // Filter chips
+  if (filtersEl) filtersEl.addEventListener('click', e => {
+    const chip = e.target.closest('span[data-cat]');
+    if (!chip) return;
+    filtersEl.querySelectorAll('span').forEach(s => s.classList.remove('active'));
+    chip.classList.add('active');
+    category = chip.dataset.cat;
+    expanded = false;
+    render();
+  });
+
+  // View all toggle
+  if (moreBtn) moreBtn.addEventListener('click', () => { expanded = !expanded; render(); });
+
+  // ----- Modal -----
+  const modal = document.getElementById('drillModal');
+  const mCat = document.getElementById('modalCat');
+  const mTitle = document.getElementById('modalTitle');
+  const mDesc = document.getElementById('modalDesc');
+  const mPills = document.getElementById('modalPills');
+  const mSteps = document.getElementById('modalSteps');
+
+  function openDrill(id) {
+    const d = DATA.drills.cards.find(c => c.id === id);
+    if (!d) return;
+    mCat.textContent = titleCase(d.category);
+    mTitle.textContent = d.title;
+    mDesc.textContent = d.desc;
+    mPills.innerHTML = `
+      <span class="m-pill m-time">⏱ ${d.time}</span>
+      <span class="m-pill ${d.class || 'bd-intermediate'}">${d.diff}</span>
+      <span class="m-pill m-pos">👥 ${d.positions || 'All Roles'}</span>`;
+    mSteps.innerHTML = (d.steps && d.steps.length)
+      ? d.steps.map((s, i) => `
+        <div class="m-step"><span class="m-step-no">${i + 1}</span><p>${s}</p></div>`).join('')
+      : `<p class="drills-empty">Technical configurations are managed live by academy field leaders.</p>`;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrill() {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('modalClose').addEventListener('click', closeDrill);
+  modal.addEventListener('click', e => { if (e.target === modal) closeDrill(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') closeDrill(); });
+
+  render();
+}

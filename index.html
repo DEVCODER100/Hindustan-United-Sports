@@ -180,31 +180,53 @@
 
       <div class="training-feature">
         <div class="training-feature-text">
-          <span class="badge"><i class="dot"></i> TODAY'S DRILL · AUTO-ROTATING</span>
-          <h3>Corner Placement Finishing</h3>
-          <p>Train accuracy into the four corners of the goal.</p>
-          <div class="drill-tags">
+          <span class="badge" id="billboard-badge"><i class="dot"></i> TODAY'S DRILL · AUTO-ROTATING</span>
+          <h3 id="billboard-title">Corner Placement Finishing</h3>
+          <p id="billboard-desc">Train accuracy into the four corners of the goal.</p>
+          <div class="drill-tags" id="billboard-meta">
             <span>Shooting</span><span>20 min</span><span>Intermediate</span>
           </div>
         </div>
-        <a href="#ai-coach" class="btn btn-gold">View Full Drill ›</a>
       </div>
 
-      <div class="training-tabs">
-        <button class="active">⚽ Drills</button>
-        <button>🗓️ 7-Day Plan</button>
-        <button>🎯 Positions</button>
-        <button>🥗 Diet Plan</button>
-        <button>🗺️ 6-Month Roadmap</button>
+      <div class="training-tabs" id="trainingTabs">
+        <button class="active" data-tab="drills">⚽ Drills</button>
+        <button data-tab="plans">🗓️ 7-Day Plan</button>
+        <button data-tab="positions">🎯 Positions</button>
+        <button data-tab="diet">🥗 Diet Plan</button>
+        <button data-tab="roadmap">🗺️ 6-Month Roadmap</button>
       </div>
 
-      <div class="drill-chips">
-        <span>Dribbling</span><span>Shooting</span><span>Passing</span><span>Ball Control</span>
-        <span>Stamina</span><span>Speed</span><span>Agility</span><span>Goalkeeping</span>
-        <span>Defending</span><span>Midfield</span><span>Attacking</span><span>Core Training</span>
+      <div class="drill-chips" id="drillFilters">
+        <span class="active" data-cat="all">All Drills</span>
+        <span data-cat="dribbling">Dribbling</span><span data-cat="shooting">Shooting</span>
+        <span data-cat="passing">Passing</span><span data-cat="ball-control">Ball Control</span>
+        <span data-cat="stamina">Stamina</span><span data-cat="speed">Speed</span>
+        <span data-cat="agility">Agility</span><span data-cat="goalkeeper">Goalkeeper</span>
+        <span data-cat="defender">Defender</span><span data-cat="midfielder">Midfielder</span>
+        <span data-cat="attacker">Attacker</span><span data-cat="gym">Gym Training</span>
+        <span data-cat="sc">Strength &amp; Conditioning</span>
+      </div>
+
+      <div class="drills-grid" id="drillsGrid"></div>
+      <div class="drills-more">
+        <button class="btn btn-outline-navy" id="drillsMoreBtn">View All Drills</button>
       </div>
     </div>
   </section>
+
+  <!-- ===== Drill Detail Modal ===== -->
+  <div class="drill-modal" id="drillModal">
+    <div class="drill-modal-card">
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      <span class="modal-cat" id="modalCat">Dribbling</span>
+      <h3 id="modalTitle">Drill title</h3>
+      <p id="modalDesc">Drill description</p>
+      <div class="modal-pills" id="modalPills"></div>
+      <h4 class="modal-steps-head">How to perform it</h4>
+      <div class="modal-steps" id="modalSteps"></div>
+    </div>
+  </div>
 
   <!-- ===== AI Coach ===== -->
   <section class="section section-dark" id="ai-coach">
@@ -243,24 +265,27 @@
   <section class="section section-tint" id="coaches">
     <div class="container">
       <div class="section-head">
-        <span class="kicker">— Our Coaches —</span>
-        <h2>Meet the team behind the talent.</h2>
+        <span class="kicker">— Meet The Coaches —</span>
+        <h2>Licensed. Experienced. Committed.</h2>
+        <p>The people behind every drill, every match, and every player's growth.</p>
       </div>
       <div class="cards-grid two coaches">
         <article class="coach-card">
-          <div class="coach-photo"><img src="assets/coach-shivam.jpeg" alt="Coach Shivam" /></div>
+          <div class="coach-photo"><img src="assets/coach-shivam.jpeg" alt="Coach Shivam" /><span class="cert-badge">🏅 C-License</span></div>
           <div class="coach-body">
-            <span class="coach-license">C-License · Head Coach</span>
+            <span class="coach-rank">Head Football Coach</span>
             <h3>Coach Shivam</h3>
-            <p>Drives player development with a sharp focus on discipline, structure and bringing out peak performance in every athlete.</p>
+            <span class="coach-license">C-License Football Coach</span>
+            <p>Professional football coach focused on player development, technical football training, discipline, stamina, and performance improvement.</p>
           </div>
         </article>
         <article class="coach-card">
-          <div class="coach-photo"><img src="assets/coach-karamveer.jpeg" alt="Coach Karamveer" /></div>
+          <div class="coach-photo"><img src="assets/coach-karamveer.jpeg" alt="Coach Karamveer" /><span class="cert-badge">🏅 D-License</span></div>
           <div class="coach-body">
-            <span class="coach-license">D-License · Coach</span>
+            <span class="coach-rank">Football Coach</span>
             <h3>Coach Karamveer</h3>
-            <p>Specialises in fundamentals, fitness and teamwork — building strong foundations for younger and developing players.</p>
+            <span class="coach-license">D-License Football Coach</span>
+            <p>Dedicated football coach focused on fundamentals, football skills, fitness, teamwork, and player growth.</p>
           </div>
         </article>
       </div>
@@ -272,8 +297,8 @@
     <div class="container">
       <div class="section-head">
         <span class="kicker">— Academy Grounds —</span>
-        <h2>Four professional venues across Vadodara.</h2>
-        <p>Quality surfaces and floodlit turfs so training never stops.</p>
+        <h2>Train across Vadodara's finest grounds.</h2>
+        <p>Four professional venues — turf, school grounds, floodlit arenas — chosen for safety, quality and accessibility.</p>
       </div>
       <div class="cards-grid four">
         <article class="ground-card">
@@ -281,7 +306,8 @@
           <div class="ground-body">
             <h3>The Eclipse Sports-2</h3>
             <p class="tags"><span>Turf</span><span>Floodlit</span></p>
-            <a href="https://maps.google.com/?q=The+Eclipse+Sports+Vadodara" target="_blank" rel="noopener" class="link-loc">📍 View location</a>
+            <p class="g-loc">📍 Vadodara, Gujarat</p>
+            <a href="https://maps.google.com/?q=The+Eclipse+Sports-2+Vadodara" target="_blank" rel="noopener" class="link-loc">Open in Google Maps ↗</a>
           </div>
         </article>
         <article class="ground-card">
@@ -289,15 +315,17 @@
           <div class="ground-body">
             <h3>Rosary High School Ground</h3>
             <p class="tags"><span>Full Field</span></p>
-            <a href="https://maps.google.com/?q=Rosary+High+School+Vadodara" target="_blank" rel="noopener" class="link-loc">📍 View location</a>
+            <p class="g-loc">📍 Rosary High School, Vadodara, Gujarat</p>
+            <a href="https://maps.google.com/?q=Rosary+High+School+Ground+Vadodara" target="_blank" rel="noopener" class="link-loc">Open in Google Maps ↗</a>
           </div>
         </article>
         <article class="ground-card">
           <div class="ground-img"><img src="assets/ground-avv.jpeg" alt="Anand Vidya Vihar School Ground" /></div>
           <div class="ground-body">
-            <h3>Anand Vidya Vihar Ground</h3>
+            <h3>Anand Vidya Vihar School Ground</h3>
             <p class="tags"><span>Training Ground</span></p>
-            <a href="https://maps.google.com/?q=Anand+Vidya+Vihar+School+Vadodara" target="_blank" rel="noopener" class="link-loc">📍 View location</a>
+            <p class="g-loc">📍 Anand Vidya Vihar School, Vadodara, Gujarat</p>
+            <a href="https://maps.google.com/?q=Anand+Vidya+Vihar+School+Vadodara" target="_blank" rel="noopener" class="link-loc">Open in Google Maps ↗</a>
           </div>
         </article>
         <article class="ground-card">
@@ -305,7 +333,8 @@
           <div class="ground-body">
             <h3>Strikers Game Arena</h3>
             <p class="tags"><span>Premium Turf</span><span>Floodlit</span></p>
-            <a href="https://maps.google.com/?q=Strikers+Game+Arena+Vadodara" target="_blank" rel="noopener" class="link-loc">📍 View location</a>
+            <p class="g-loc">📍 Vadodara, Gujarat</p>
+            <a href="https://maps.google.com/?q=Strikers+Game+Arena+Vadodara" target="_blank" rel="noopener" class="link-loc">Open in Google Maps ↗</a>
           </div>
         </article>
       </div>
@@ -317,7 +346,8 @@
     <div class="container">
       <div class="section-head">
         <span class="kicker">— Gallery —</span>
-        <h2>Inside the academy.</h2>
+        <h2>Moments from the academy.</h2>
+        <p>A glimpse into our grounds, our coaches and our culture.</p>
       </div>
       <div class="gallery-grid">
         <figure><img src="assets/ground-eclipse.jpeg" alt="Eclipse turf" /></figure>
@@ -336,13 +366,13 @@
       <div class="contact-text">
         <span class="kicker light">— Get in touch —</span>
         <h2>Ready to start your <span class="gold">football journey?</span></h2>
-        <p>Book a free trial session or reach out with any questions — we usually reply within minutes.</p>
+        <p>Book a free trial session or reach out to our team — we'll guide you to the right program and ground.</p>
         <p class="loc-line">📍 Vadodara, Gujarat, India</p>
       </div>
       <div class="contact-actions">
-        <a href="https://wa.me/917622856323?text=Hi%2C%20I%27d%20like%20to%20book%20a%20trial" target="_blank" rel="noopener" class="contact-btn whatsapp">💬 WhatsApp<br><small>+91 76228 56323</small></a>
-        <a href="tel:+917622856323" class="contact-btn call">📞 Call Us<br><small>+91 76228 56323</small></a>
-        <a href="https://instagram.com/hindustanunitedsports" target="_blank" rel="noopener" class="contact-btn insta">📸 Instagram<br><small>@hindustanunitedsports</small></a>
+        <a href="https://wa.me/917622856323?text=Hi%2C%20I%27d%20like%20to%20book%20a%20trial" target="_blank" rel="noopener" class="contact-btn whatsapp"><span class="c-label">💬 WhatsApp</span><strong>Chat with us</strong><small>+91 76228 56323</small></a>
+        <a href="tel:+917622856323" class="contact-btn call"><span class="c-label">📞 Call</span><strong>Speak to a coach</strong><small>+91 76228 56323</small></a>
+        <a href="https://instagram.com/hindustanunitedsports" target="_blank" rel="noopener" class="contact-btn insta"><span class="c-label">📸 Instagram</span><strong>@hindustanunitedsports</strong><small>Follow our journey</small></a>
       </div>
     </div>
   </section>
@@ -377,6 +407,7 @@
 
   <a href="https://wa.me/917622856323?text=Hi%2C%20I%27d%20like%20to%20book%20a%20trial" target="_blank" rel="noopener" class="float-wa" aria-label="Chat on WhatsApp">💬</a>
 
+  <script src="data.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
