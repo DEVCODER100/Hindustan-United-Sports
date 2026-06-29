@@ -1,0 +1,10 @@
+{
+  "name": "hindustan-united-sports",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Hindustan United Sports academy site + 30-Day Training Program API",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  }
+}

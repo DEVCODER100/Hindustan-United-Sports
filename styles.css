@@ -143,6 +143,18 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em
   background:radial-gradient(circle at 85% 20%,rgba(36,86,180,.5),transparent 55%),linear-gradient(150deg,#13347e,#0b245e);
   color:#fff;border-radius:22px;padding:2.4rem 2.6rem;margin-bottom:2rem;
 }
+.plan-banner{
+  display:flex;justify-content:space-between;align-items:center;gap:2rem;flex-wrap:wrap;
+  background:linear-gradient(150deg,#1a4a2e,#0c2f1c);
+  border:1px solid rgba(245,166,35,.35);
+  color:#fff;border-radius:22px;padding:2.2rem 2.6rem;margin-bottom:1.6rem;
+  transition:transform .2s,box-shadow .2s;
+}
+.plan-banner:hover{transform:translateY(-4px);box-shadow:0 24px 50px -26px rgba(0,0,0,.5)}
+.plan-banner h3{font-size:1.7rem;margin-bottom:.4rem;color:#fff}
+.plan-banner p{color:rgba(255,255,255,.82);max-width:560px}
+.plan-banner .badge{background:rgba(245,166,35,.18);border-color:rgba(245,166,35,.4);color:var(--gold)}
+.plan-banner .btn{flex-shrink:0}
 .badge{display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-size:.72rem;letter-spacing:.1em;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:.45rem .9rem;border-radius:999px;margin-bottom:1rem}
 .training-feature h3{font-size:1.9rem;margin-bottom:.4rem}
 .training-feature p{color:rgba(255,255,255,.82);margin-bottom:1.1rem}
