@@ -289,7 +289,7 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em
 .float-wa:hover{transform:scale(1.1)}
 
 /* ===== Reveal animation ===== */
-.section-head,.feature-card,.program-card,.ground-card,.coach-card,.gallery-grid figure,.training-feature,.training-tabs{
+.js-anim .section-head,.js-anim .feature-card,.js-anim .program-card,.js-anim .ground-card,.js-anim .coach-card,.js-anim .training-feature,.js-anim .training-tabs{
   opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease;
 }
 .in-view{opacity:1 !important;transform:none !important}

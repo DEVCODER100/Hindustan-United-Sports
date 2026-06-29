@@ -14,14 +14,24 @@ mainNav.querySelectorAll('a').forEach(a =>
   })
 );
 
-// ===== Scroll reveal =====
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
-  });
-}, { threshold: 0.12 });
-document.querySelectorAll('.section-head,.feature-card,.program-card,.ground-card,.coach-card,.resource-card,.gallery-grid figure')
-  .forEach(el => io.observe(el));
+// ===== Scroll reveal (progressive enhancement — content stays visible if anything fails) =====
+const revealSel = '.section-head,.feature-card,.program-card,.ground-card,.coach-card,.resource-card,.training-feature,.training-tabs';
+const revealEls = document.querySelectorAll(revealSel);
+const revealAll = () => revealEls.forEach(el => el.classList.add('in-view'));
+
+if ('IntersectionObserver' in window && revealEls.length) {
+  document.documentElement.classList.add('js-anim'); // only now hide-then-reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -5% 0px' });
+  revealEls.forEach(el => io.observe(el));
+  // Safety net: if the observer never fires (some browsers/headless), reveal everything anyway.
+  setTimeout(revealAll, 1800);
+} else {
+  revealAll();
+}
 
 // ===== AI Coach (rule-based demo assistant) =====
 const aiForm = document.getElementById('aiForm');
