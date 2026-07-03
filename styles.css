@@ -33,7 +33,7 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em
 /* ===== Buttons ===== */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
-  font-weight:700;font-size:.95rem;border-radius:999px;
+  font-weight:700;font-size:.95rem;border-radius:999px;white-space:nowrap;
   padding:.75rem 1.5rem;cursor:pointer;border:2px solid transparent;
   transition:transform .15s ease, box-shadow .2s ease, background .2s ease;
 }
@@ -52,8 +52,8 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em
 .brand-text{display:flex;flex-direction:column;line-height:1.15}
 .brand-text strong{font-family:'Space Grotesk',sans-serif;font-size:1.06rem;color:var(--navy)}
 .brand-text small{font-size:.6rem;letter-spacing:.18em;color:var(--muted);font-weight:600}
-.main-nav{display:flex;gap:1.4rem;margin-left:auto}
-.main-nav a{font-weight:600;font-size:.92rem;color:#3a4763;position:relative;padding:.2rem 0}
+.main-nav{display:flex;align-items:center;gap:1.05rem;margin-left:auto}
+.main-nav a{font-weight:600;font-size:.88rem;color:#3a4763;position:relative;padding:.2rem 0;white-space:nowrap}
 .main-nav a:hover{color:var(--gold)}
 .main-nav a::after{content:"";position:absolute;left:0;bottom:-3px;width:0;height:2px;background:var(--gold);transition:width .2s}
 .main-nav a:hover::after{width:100%}
@@ -306,12 +306,14 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em
   .ai-wrap,.contact-wrap{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr 1fr}
 }
-@media(max-width:760px){
-  .main-nav{position:absolute;top:74px;left:0;right:0;flex-direction:column;gap:0;background:#fff;border-bottom:1px solid var(--line);max-height:0;overflow:hidden;transition:max-height .3s ease}
-  .main-nav.open{max-height:440px}
+@media(max-width:1024px){
+  .main-nav{position:absolute;top:74px;left:0;right:0;flex-direction:column;gap:0;align-items:stretch;background:#fff;border-bottom:1px solid var(--line);max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .main-nav.open{max-height:520px}
   .main-nav a{padding:.95rem 24px;border-top:1px solid var(--line)}
   .nav-cta{display:none}
   .nav-toggle{display:flex}
+}
+@media(max-width:760px){
   .coaches .coach-card{flex-direction:column;text-align:center}
   .training-feature{flex-direction:column;align-items:flex-start}
 }
