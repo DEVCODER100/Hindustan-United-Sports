@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Player Test Report | Hindustan United Sports</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Matches the main academy site (navy / gold, Space Grotesk) */
+            --navy: #0b245e;
+            --navy-2: #081b48;
+            --blue: #143a8a;
+            --blue-soft: #1d4ba0;
+            --white: #ffffff;
+            --white-soft: #f3f7fc;
+            --text-muted: #b7c6d9;
+            --line: rgba(255, 255, 255, 0.12);
+            --yellow: #f5a623;
+            --yellow-2: #f59e0b;
+            --green: #24d18f;
+            --red: #ff6b6b;
+            --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+            --heading-font: 'Space Grotesk', sans-serif;
+            --body-font: 'Inter', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        /* Space Grotesk needs an explicit weight where Anton was single-weight */
+        h1, .white-panel h2, .panel-title h2, .panel-title h3, .section-label,
+        .player-line h2, .ovr-badge span, .score-box strong, .insight-panel h3,
+        .action-btn, .manual-heading h2, .test-card h3, .crest { font-weight: 700; }
+        .report-header::after, .test-card::before { font-weight: 700; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: var(--body-font);
+            color: var(--white);
+            background:
+                radial-gradient(circle at top left, rgba(245, 166, 35, 0.14), transparent 32%),
+                radial-gradient(circle at 85% 12%, rgba(20, 58, 138, 0.7), transparent 40%),
+                linear-gradient(150deg, #0b245e 0%, #0a1f54 45%, #081b48 100%);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent 85%);
+        }
+
+        a { color: inherit; }
+
+        .page-shell {
+            width: min(1240px, calc(100% - 32px));
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 22px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand-lockup {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .crest {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 2px solid var(--yellow);
+            display: grid;
+            place-items: center;
+            font-family: var(--heading-font);
+            color: var(--yellow);
+            background: linear-gradient(145deg, var(--navy), var(--blue));
+            box-shadow: 0 0 0 6px rgba(255,216,77,0.08);
+            flex: 0 0 auto;
+        }
+
+        .brand-copy strong {
+            display: block;
+            font-size: 0.95rem;
+            line-height: 1.1;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .brand-copy span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            margin-top: 2px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--white-soft);
+            padding: 9px 13px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .pill.yellow {
+            color: var(--navy);
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-2));
+            border-color: transparent;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.02fr 0.98fr;
+            align-items: center;
+            gap: 44px;
+            padding: 58px 0 34px;
+        }
+
+        .eyebrow {
+            color: var(--yellow);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.82rem;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-family: var(--heading-font);
+            font-size: clamp(3.4rem, 8vw, 7.2rem);
+            line-height: 0.92;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 0.03em;
+        }
+
+        h1 span {
+            color: var(--yellow);
+            display: block;
+        }
+
+        .hero-text {
+            color: var(--text-muted);
+            max-width: 700px;
+            font-size: 1.06rem;
+            margin: 20px 0 0;
+        }
+
+        .hero-bullets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .mini-stat {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 16px;
+            background: rgba(255,255,255,0.055);
+            min-height: 100px;
+        }
+
+        .mini-stat strong {
+            display: block;
+            font-size: 1.45rem;
+            color: var(--white);
+            font-weight: 900;
+        }
+
+        .mini-stat span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .hero-card {
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.06);
+            border-radius: 28px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(18px);
+        }
+
+        .white-panel {
+            background: var(--white);
+            color: var(--navy);
+            border-radius: 22px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .white-panel::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            right: -70px;
+            top: -80px;
+            background: var(--yellow);
+            border-radius: 50%;
+            opacity: 0.75;
+        }
+
+        .white-panel h2 {
+            font-family: var(--heading-font);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-size: 2.3rem;
+            line-height: 0.95;
+            margin: 0;
+            max-width: 300px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .white-panel p {
+            margin: 14px 0 0;
+            color: #37516c;
+            max-width: 470px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .report-layout {
+            display: grid;
+            grid-template-columns: minmax(320px, 470px) 1fr;
+            gap: 28px;
+            align-items: start;
+            padding: 28px 0 52px;
+        }
+
+        .panel {
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.065);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .panel-title {
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .panel-title h2,
+        .panel-title h3 {
+            margin: 0;
+            font-family: var(--heading-font);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-size: 1.55rem;
+        }
+
+        .panel-title small {
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .controls-body { padding: 22px; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        .field.full { grid-column: 1 / -1; }
+
+        label {
+            display: block;
+            color: var(--yellow);
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 12px;
+            background: rgba(3,20,38,0.78);
+            color: var(--white);
+            padding: 12px 13px;
+            font-family: var(--body-font);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--yellow);
+            box-shadow: 0 0 0 4px rgba(255,216,77,0.1);
+        }
+
+        input[type="range"] {
+            padding: 0;
+            accent-color: var(--yellow);
+            border: none;
+            background: transparent;
+        }
+
+        .section-label {
+            margin: 26px 0 14px;
+            font-family: var(--heading-font);
+            font-size: 1.25rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-label::before {
+            content: "";
+            width: 8px;
+            height: 24px;
+            border-radius: 99px;
+            background: var(--yellow);
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: minmax(112px, 1fr) minmax(120px, 1.35fr) 74px;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(3,20,38,0.45);
+            border-radius: 16px;
+            margin-bottom: 10px;
+        }
+
+        .metric-name strong {
+            display: block;
+            font-size: 0.9rem;
+            line-height: 1.15;
+        }
+
+        .metric-name span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.74rem;
+            margin-top: 3px;
+        }
+
+        .metric-number {
+            text-align: center;
+            color: var(--yellow);
+            font-weight: 900;
+            padding-inline: 8px;
+        }
+
+        .report-area {
+            position: sticky;
+            top: 18px;
+        }
+
+        .report-card {
+            width: min(100%, 620px);
+            margin: 0 auto;
+            background: var(--white);
+            color: var(--navy);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .report-header {
+            padding: 26px;
+            color: var(--white);
+            background:
+                linear-gradient(135deg, rgba(255,216,77,0.22), transparent 38%),
+                linear-gradient(135deg, #031426 0%, #0a3b73 100%);
+            position: relative;
+        }
+
+        .report-header::after {
+            content: "HUS";
+            position: absolute;
+            right: 24px;
+            bottom: -12px;
+            font-family: var(--heading-font);
+            font-size: 7rem;
+            color: rgba(255,255,255,0.05);
+            letter-spacing: 0.02em;
+        }
+
+        .report-topline {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+
+        .report-brand strong {
+            display: block;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            font-size: 0.85rem;
+        }
+
+        .report-brand span {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        .ovr-badge {
+            display: grid;
+            place-items: center;
+            min-width: 112px;
+            min-height: 112px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-2));
+            color: var(--navy);
+            box-shadow: 0 18px 40px rgba(255,189,26,0.22);
+        }
+
+        .ovr-badge span {
+            font-family: var(--heading-font);
+            font-size: 4.1rem;
+            line-height: 0.8;
+        }
+
+        .ovr-badge small {
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.16em;
+        }
+
+        .player-line {
+            position: relative;
+            z-index: 1;
+            margin-top: 34px;
+        }
+
+        .player-line h2 {
+            margin: 0;
+            font-family: var(--heading-font);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            line-height: 0.95;
+            font-size: clamp(2.45rem, 5vw, 4rem);
+        }
+
+        .player-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .meta-chip {
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 7px 11px;
+            border-radius: 999px;
+            color: var(--white);
+            border: 1px solid rgba(255,255,255,0.16);
+            background: rgba(255,255,255,0.08);
+            font-size: 0.76rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .report-body {
+            padding: 24px;
+        }
+
+        .score-strip {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .score-box {
+            background: var(--white-soft);
+            border: 1px solid #e2eaf3;
+            border-radius: 18px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+
+        .score-box strong {
+            display: block;
+            font-family: var(--heading-font);
+            font-size: 2rem;
+            line-height: 0.9;
+            color: var(--blue);
+        }
+
+        .score-box span {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 0.09em;
+            color: #47617b;
+        }
+
+        .insight-panel {
+            border-radius: 20px;
+            background: linear-gradient(135deg, #031426 0%, #0a3b73 100%);
+            color: var(--white);
+            padding: 18px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: center;
+            margin: 18px 0;
+        }
+
+        .insight-panel h3 {
+            margin: 0 0 7px;
+            font-family: var(--heading-font);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-size: 1.3rem;
+        }
+
+        .insight-panel p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .band {
+            min-width: 116px;
+            text-align: center;
+            border-radius: 16px;
+            background: var(--yellow);
+            color: var(--navy);
+            padding: 12px 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .raw-table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 18px;
+            font-size: 0.83rem;
+        }
+
+        .raw-table th,
+        .raw-table td {
+            text-align: left;
+            padding: 11px 10px;
+            border-bottom: 1px solid #e6edf5;
+        }
+
+        .raw-table th {
+            color: #526b86;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            background: #f7faff;
+        }
+
+        .raw-table td:last-child,
+        .raw-table th:last-child {
+            text-align: right;
+            font-weight: 900;
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: min(100%, 620px);
+            margin: 16px auto 0;
+        }
+
+        .action-btn {
+            border: none;
+            border-radius: 16px;
+            padding: 15px 18px;
+            font-family: var(--heading-font);
+            font-size: 1.08rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-2));
+            color: var(--navy);
+        }
+
+        .action-btn.secondary {
+            background: rgba(255,255,255,0.08);
+            color: var(--white);
+            border: 1px solid var(--line);
+        }
+
+        .action-btn:hover { transform: translateY(-2px); }
+
+        .manual-section {
+            padding: 20px 0 70px;
+        }
+
+        .manual-heading {
+            display: grid;
+            grid-template-columns: 0.95fr 1.05fr;
+            gap: 24px;
+            align-items: end;
+            margin-bottom: 24px;
+        }
+
+        .manual-heading h2 {
+            font-family: var(--heading-font);
+            font-size: clamp(2.4rem, 5vw, 5rem);
+            line-height: 0.94;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .manual-heading h2 span { color: var(--yellow); }
+
+        .manual-heading p {
+            color: var(--text-muted);
+            margin: 0 0 8px;
+            font-size: 1.02rem;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .test-card {
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.065);
+            border-radius: 24px;
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-card.white-card {
+            background: var(--white);
+            color: var(--navy);
+        }
+
+        .test-card::before {
+            content: attr(data-number);
+            position: absolute;
+            right: 16px;
+            top: 4px;
+            font-family: var(--heading-font);
+            font-size: 5.6rem;
+            color: rgba(255,255,255,0.06);
+            line-height: 1;
+        }
+
+        .test-card.white-card::before { color: rgba(3,20,38,0.07); }
+
+        .test-card h3 {
+            position: relative;
+            margin: 0 0 12px;
+            font-family: var(--heading-font);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--yellow);
+            font-size: 1.7rem;
+        }
+
+        .test-card.white-card h3 { color: var(--blue); }
+
+        .test-card p {
+            position: relative;
+            color: var(--text-muted);
+            margin: 0 0 14px;
+            font-size: 0.94rem;
+        }
+
+        .test-card.white-card p { color: #405c78; }
+
+        .detail-list {
+            position: relative;
+            display: grid;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .detail-item {
+            padding: 12px 13px;
+            border-radius: 16px;
+            background: rgba(3,20,38,0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .white-card .detail-item {
+            background: #f4f8fd;
+            border-color: #e3ebf4;
+        }
+
+        .detail-item strong {
+            display: block;
+            color: var(--white);
+            font-size: 0.78rem;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .white-card .detail-item strong { color: var(--blue); }
+
+        .detail-item span,
+        .detail-item ul {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin: 0;
+            padding-left: 0;
+        }
+
+        .white-card .detail-item span,
+        .white-card .detail-item ul { color: #405c78; }
+
+        .detail-item ul {
+            padding-left: 18px;
+        }
+
+        .detail-item li { margin-bottom: 5px; }
+        .detail-item li:last-child { margin-bottom: 0; }
+
+        .footer-note {
+            border-top: 1px solid var(--line);
+            margin-top: 28px;
+            padding: 24px 0 44px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-note strong { color: var(--white); }
+
+        @media (max-width: 1040px) {
+            .hero,
+            .report-layout,
+            .manual-heading { grid-template-columns: 1fr; }
+
+            .report-area { position: static; }
+        }
+
+        @media (max-width: 720px) {
+            .page-shell { width: min(100% - 22px, 1240px); }
+            .top-bar { align-items: flex-start; }
+            .top-actions { display: none; }
+            .hero { padding-top: 38px; }
+            .hero-bullets,
+            .score-strip,
+            .test-grid,
+            .btn-row { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .field.full { grid-column: auto; }
+            .metric-row { grid-template-columns: 1fr; }
+            .metric-number { text-align: left; }
+            .report-card { border-radius: 24px; }
+            .report-topline { flex-direction: column-reverse; }
+            .ovr-badge { min-width: 100%; min-height: 92px; }
+        }
+
+        @media print {
+            body { background: #ffffff; }
+            body::before,
+            .top-bar,
+            .hero,
+            .controls-panel,
+            .btn-row,
+            .manual-section,
+            .footer-note { display: none !important; }
+            .page-shell { width: 100%; }
+            .report-layout { display: block; padding: 0; }
+            .report-card { box-shadow: none; border: 1px solid #d6dce4; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="top-bar">
+            <a class="brand-lockup" href="index.html" style="text-decoration:none;color:inherit">
+                <div class="crest"><img src="assets/logo.jpeg" alt="Hindustan United Sports" style="width:100%;height:100%;object-fit:cover;border-radius:50%" /></div>
+                <div class="brand-copy">
+                    <strong>Hindustan United Sports</strong>
+                    <span>Vadodara · Gujarat</span>
+                </div>
+            </a>
+            <div class="top-actions">
+                <a class="pill" href="index.html">← Back to Site</a>
+                <span class="pill yellow">Player Development</span>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div>
+                <div class="eyebrow">Assessment · Report · Development Plan</div>
+                <h1>Player Test <span>Report</span></h1>
+                <p class="hero-text">
+                    A clean Hindustan United style performance report for academy players. Enter test scores, generate ratings instantly, and use the detailed testing manual below to run the same process consistently for every batch.
+                </p>
+                <div class="hero-bullets">
+                    <div class="mini-stat">
+                        <strong>5</strong>
+                        <span>Core performance areas</span>
+                    </div>
+                    <div class="mini-stat">
+                        <strong>9</strong>
+                        <span>Football-specific tests</span>
+                    </div>
+                    <div class="mini-stat">
+                        <strong>99</strong>
+                        <span>Maximum report rating</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-card">
+                <div class="white-panel">
+                    <h2>Built for future footballers.</h2>
+                    <p>
+                        Use this format during monthly testing, trial sessions, parent reviews, and player development tracking. White report panels make it easier to print, screenshot, and share with parents.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <main class="report-layout">
+            <section class="panel controls-panel">
+                <div class="panel-title">
+                    <h2>Enter Test Data</h2>
+                    <small>Live Rating</small>
+                </div>
+                <div class="controls-body">
+                    <div class="form-grid">
+                        <div class="field full">
+                            <label for="in-name">Player Name</label>
+                            <input type="text" id="in-name" placeholder="E.g., Kabir Patel" maxlength="24" />
+                        </div>
+                        <div class="field">
+                            <label for="in-age">Age Group</label>
+                            <select id="in-age">
+                                <option value="1.2">U-10 Foundation</option>
+                                <option value="1.1">U-12 Development</option>
+                                <option value="1.0" selected>U-15 Academy</option>
+                                <option value="0.95">U-18 Pre-Pro</option>
+                                <option value="0.9">Senior First Team</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="in-pos">Position</label>
+                            <select id="in-pos">
+                                <option value="FWD">Attacker</option>
+                                <option value="MID" selected>Midfielder</option>
+                                <option value="DEF">Defender</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="in-date">Test Date</label>
+                            <input type="date" id="in-date" />
+                        </div>
+                        <div class="field">
+                            <label for="in-ground">Ground</label>
+                            <input type="text" id="in-ground" placeholder="E.g., Strikers Game Arena" maxlength="32" />
+                        </div>
+                    </div>
+
+                    <div class="section-label">1. Pace & Speed</div>
+                    <div class="metric-row">
+                        <div class="metric-name"><strong>10m Sprint</strong><span>Acceleration time</span></div>
+                        <input type="range" id="slide-sprint10" min="1.5" max="3.5" step="0.1" value="2.2" />
+                        <input type="number" class="metric-number" id="num-sprint10" min="1.5" max="3.5" step="0.1" value="2.2" />
+                    </div>
+                    <div class="metric-row">
+                        <div class="metric-name"><strong>30m Sprint</strong><span>Top speed time</span></div>
+                        <input type="range" id="slide-sprint30" min="4.0" max="7.5" step="0.1" value="5.0" />
+                        <input type="number" class="metric-number" id="num-sprint30" min="4.0" max="7.5" step="0.1" value="5.0" />
+                    </div>
+
+                    <div class="section-label">2. Agility & Balance</div>
+                    <div class="metric-row">
+                        <div class="metric-name"><strong>Illinois Test</strong><span>Change of direction</span></div>
+                        <input type="range" id="slide-illinois" min="14.0" max="22.0" step="0.1" value="16.5" />
+                        <input type="number" class="metric-number" id="num-illinois" min="14.0" max="22.0" step="0.1" value="16.5" />
+                    </div>
+                    <div class="metric-row">
+                        <div class="metric-name"><strong>T-Test</strong><span>Shuffle and backpedal</span></div>
+                        <input type="range" id="slide-ttest" min="9.0" max="15.0" step="0.1" value="11.0" />
+                        <input type="number" class="metric-number" id="num-ttest" min="9.0" max="15.0" step="0.1" value="11.0" />
+                    </div>
+
+                    <div class="section-label">3. Ball Mastery</div>
+                    <div class="metric-row">
+                        <div class="metric-name"><strong>Slalom Dribble</strong><span>Close control time</span></div>
+                        <input type="range" id="slide-slalom" min="8.0" max="18.0" step="0.1" value="11.5" />
+                        <input type="number" class="metric-number" id="num-slalom" min="8.0" max="18.0" step="0.1" value="11.5" />
+                    </div>
+                    <div class="metric-row">
+                        <div class="metric-name"><strong>Figure-8 Dribble</strong><span>Laps in 30 seconds</span></div>
+                        <input type="range" id="slide-fig8" min="2" max="12" step="1" value="5" />
+                        <input type="number" class="metric-number" id="num-fig8" min="2" max="12" step="1" value="5" />
+                    </div>
+
+                    <div class="section-label">4. Passing Technique</div>
+                    <div class="metric-row">
+                        <div class="metric-name"><strong>Wall Pass</strong><span>Clean hits in 30 sec</span></div>
+                        <input type="range" id="slide-wallpass" min="5" max="40" step="1" value="20" />
+                        <input type="number" class="metric-number" id="num-wallpass" min="5" max="40" step="1" value="20" />
+                    </div>
+                    <div class="metric-row">
+                        <div class="metric-name"><strong>Target Accuracy</strong><span>Successful passes %</span></div>
+                        <input type="range" id="slide-target" min="0" max="100" step="5" value="70" />
+                        <input type="number" class="metric-number" id="num-target" min="0" max="100" step="5" value="70" />
+                    </div>
+
+                    <div class="section-label">5. Endurance</div>
+                    <div class="metric-row">
+                        <div class="metric-name"><strong>Yo-Yo Test</strong><span>Final level reached</span></div>
+                        <input type="range" id="slide-yoyo" min="5" max="20" step="1" value="12" />
+                        <input type="number" class="metric-number" id="num-yoyo" min="5" max="20" step="1" value="12" />
+                    </div>
+                </div>
+            </section>
+
+            <section class="report-area">
+                <div id="player-report-card" class="report-card">
+                    <div class="report-header">
+                        <div class="report-topline">
+                            <div class="report-brand">
+                                <strong>Hindustan United Sports</strong>
+                                <span>Player Development Assessment</span>
+                            </div>
+                            <div class="ovr-badge">
+                                <div>
+                                    <span id="out-ovr">75</span>
+                                    <small>OVR</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="player-line">
+                            <h2 id="out-name">Player Name</h2>
+                            <div class="player-meta">
+                                <span class="meta-chip" id="out-position">MIDFIELDER</span>
+                                <span class="meta-chip" id="out-age">U-15 Academy</span>
+                                <span class="meta-chip" id="out-date">Test Date</span>
+                                <span class="meta-chip" id="out-ground">Ground</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-body">
+                        <div class="score-strip">
+                            <div class="score-box"><strong id="out-pac">70</strong><span>Pace</span></div>
+                            <div class="score-box"><strong id="out-agi">75</strong><span>Agility</span></div>
+                            <div class="score-box"><strong id="out-dri">78</strong><span>Dribbling</span></div>
+                            <div class="score-box"><strong id="out-pas">80</strong><span>Passing</span></div>
+                            <div class="score-box"><strong id="out-sta">70</strong><span>Stamina</span></div>
+                        </div>
+
+                        <div class="insight-panel">
+                            <div>
+                                <h3 id="out-band-title">Development Band</h3>
+                                <p id="out-insight">Strong base. Keep tracking monthly improvement and focus on the weakest area first.</p>
+                            </div>
+                            <div class="band" id="out-band">Academy</div>
+                        </div>
+
+                        <table class="raw-table" aria-label="Raw Player Test Scores">
+                            <thead>
+                                <tr>
+                                    <th>Test</th>
+                                    <th>Measures</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>10m Sprint</td><td>Acceleration</td><td id="raw-sprint10">2.2 s</td></tr>
+                                <tr><td>30m Sprint</td><td>Top Speed</td><td id="raw-sprint30">5.0 s</td></tr>
+                                <tr><td>Illinois Test</td><td>Agility</td><td id="raw-illinois">16.5 s</td></tr>
+                                <tr><td>T-Test</td><td>Balance</td><td id="raw-ttest">11.0 s</td></tr>
+                                <tr><td>Slalom Dribble</td><td>Ball Control</td><td id="raw-slalom">11.5 s</td></tr>
+                                <tr><td>Figure-8</td><td>Dribbling</td><td id="raw-fig8">5 laps</td></tr>
+                                <tr><td>Wall Pass</td><td>First Touch</td><td id="raw-wallpass">20 hits</td></tr>
+                                <tr><td>Target Passing</td><td>Accuracy</td><td id="raw-target">70%</td></tr>
+                                <tr><td>Yo-Yo Test</td><td>Endurance</td><td id="raw-yoyo">Level 12</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="action-btn primary" onclick="downloadReportPNG()">Download Report PNG</button>
+                    <button class="action-btn secondary" onclick="window.print()">Print Report</button>
+                </div>
+                <div class="btn-row" style="grid-template-columns:1fr;margin-top:12px">
+                    <button class="action-btn" id="save-btn" style="background:linear-gradient(135deg,var(--green),#14b077);color:#04231a" onclick="saveReport()">Save to Academy</button>
+                </div>
+                <p id="save-msg" style="width:min(100%,620px);margin:12px auto 0;text-align:center;font-size:0.85rem;color:var(--text-muted)"></p>
+            </section>
+        </main>
+
+        <section class="manual-section" id="testing-manual">
+            <div class="manual-heading">
+                <h2>Detailed Test <span>Explanation</span></h2>
+                <p>
+                    Use these instructions so every coach tests players in the same way. Standard testing matters because one small change in distance, timing, surface, or rest period can affect the final score.
+                </p>
+            </div>
+
+            <div class="test-grid">
+                <article class="test-card" data-number="01">
+                    <h3>10-Meter Sprint</h3>
+                    <p>This test measures the player’s first-step acceleration. In football, this matters when a player has to beat an opponent to a loose ball, press quickly, or make a short explosive run.</p>
+                    <div class="detail-list">
+                        <div class="detail-item"><strong>Setup</strong><span>Mark a start line and finish line exactly 10 meters apart. Use cones or flat markers. Test on the same surface every time.</span></div>
+                        <div class="detail-item"><strong>How to conduct</strong><span>Player starts from a still standing position behind the line. Start timing on first movement and stop when the chest crosses the finish line.</span></div>
+                        <div class="detail-item"><strong>Scoring</strong><span>Record time in seconds. Lower time means better acceleration. Give each player two attempts and keep the best result.</span></div>
+                    </div>
+                </article>
+
+                <article class="test-card white-card" data-number="02">
+                    <h3>30-Meter Sprint</h3>
+                    <p>This test measures speed over a longer football sprint. It is useful for wingers, strikers, fullbacks, and defenders who need recovery speed.</p>
+                    <div class="detail-list">
+                        <div class="detail-item"><strong>Setup</strong><span>Mark a straight 30-meter lane. Keep the lane clear and make sure the player has enough space after the finish line to slow down safely.</span></div>
+                        <div class="detail-item"><strong>How to conduct</strong><span>Player starts behind the line. On the coach’s signal, the player sprints through the finish line without slowing before the line.</span></div>
+                        <div class="detail-item"><strong>Scoring</strong><span>Record the best time from two attempts. Lower time means better speed. Rest for at least 2 minutes between attempts.</span></div>
+                    </div>
+                </article>
+
+                <article class="test-card white-card" data-number="03">
+                    <h3>Illinois Agility Test</h3>
+                    <p>This test checks how well a player can accelerate, decelerate, turn, and change direction under control. It connects directly with pressing, 1v1 defending, and quick match movements.</p>
+                    <div class="detail-list">
+                        <div class="detail-item"><strong>Setup</strong><span>Create a 10m x 5m rectangle. Place four cones at the corners and four cones down the center line with equal spacing for weaving.</span></div>
+                        <div class="detail-item"><strong>How to conduct</strong><span>Player sprints, turns around cones, weaves through the middle cones, and finishes through the final gate as fast as possible.</span></div>
+                        <div class="detail-item"><strong>Scoring</strong><span>Record total time in seconds. Lower time means better agility. Add a repeat attempt if the player knocks a cone heavily or runs the wrong route.</span></div>
+                    </div>
+                </article>
+
+                <article class="test-card" data-number="04">
+                    <h3>T-Test</h3>
+                    <p>The T-Test measures lateral movement, balance, body control, and the ability to move forward, sideways, and backward. It is especially useful for midfielders and defenders.</p>
+                    <div class="detail-list">
+                        <div class="detail-item"><strong>Setup</strong><span>Place four cones in a T shape: start cone at the bottom, center cone 10 meters ahead, left cone 5 meters from center, and right cone 5 meters from center.</span></div>
+                        <div class="detail-item"><strong>How to conduct</strong><span>Sprint forward to the center, shuffle left, shuffle right across to the far cone, shuffle back to center, then backpedal to start.</span></div>
+                        <div class="detail-item"><strong>Scoring</strong><span>Record time in seconds. Lower time is better. Player should not cross feet during shuffles because the test is measuring controlled lateral movement.</span></div>
+                    </div>
+                </article>
+
+                <article class="test-card" data-number="05">
+                    <h3>Slalom Dribble</h3>
+                    <p>This test measures close ball control while changing direction. It shows whether the player can move with the ball under pressure without losing rhythm.</p>
+                    <div class="detail-list">
+                        <div class="detail-item"><strong>Setup</strong><span>Place 10 cones in a straight line, 1 meter apart. Start line should be 1 meter before the first cone.</span></div>
+                        <div class="detail-item"><strong>How to conduct</strong><span>Player dribbles through every cone using controlled touches, turns at the final cone, and dribbles back through the same line.</span></div>
+                        <div class="detail-item"><strong>Scoring</strong><span>Record time in seconds. Lower time is better, but the player must keep control. Add penalty time if a cone is skipped or knocked far away.</span></div>
+                    </div>
+                </article>
+
+                <article class="test-card white-card" data-number="06">
+                    <h3>Figure-8 Dribble</h3>
+                    <p>This test checks ball mastery, turning quality, weak-foot use, and control around tight angles. It is a simple but powerful test for younger players.</p>
+                    <div class="detail-list">
+                        <div class="detail-item"><strong>Setup</strong><span>Place two cones 5 meters apart. The player starts next to one cone with the ball under control.</span></div>
+                        <div class="detail-item"><strong>How to conduct</strong><span>On the whistle, the player dribbles around both cones in a figure-8 pattern for 30 seconds. Encourage both feet and tight turns.</span></div>
+                        <div class="detail-item"><strong>Scoring</strong><span>Count completed full laps. Higher laps means better ball control and turning speed. Do not count a lap if the player loses full control of the ball.</span></div>
+                    </div>
+                </article>
+
+                <article class="test-card white-card" data-number="07">
+                    <h3>Wall Pass Test</h3>
+                    <p>This test measures passing rhythm, first touch, body shape, and consistency. It is useful for checking whether a player can pass and receive quickly.</p>
+                    <div class="detail-list">
+                        <div class="detail-item"><strong>Setup</strong><span>Player stands 2 meters from a flat wall or rebound board. Mark the standing area so every player uses the same distance.</span></div>
+                        <div class="detail-item"><strong>How to conduct</strong><span>For 30 seconds, the player passes against the wall, controls the rebound, and repeats. Only clean controlled passes should be counted.</span></div>
+                        <div class="detail-item"><strong>Scoring</strong><span>Count successful wall passes in 30 seconds. Higher count is better. Missed touches, uncontrolled rebounds, or passes outside the area do not count.</span></div>
+                    </div>
+                </article>
+
+                <article class="test-card" data-number="08">
+                    <h3>Target Passing Accuracy</h3>
+                    <p>This test measures passing accuracy under a simple target condition. It helps identify players who can find teammates or play through gates with precision.</p>
+                    <div class="detail-list">
+                        <div class="detail-item"><strong>Setup</strong><span>Create small cone gates or mini-goals at 5m, 10m, and 15m. Keep the ball starting point fixed for every player.</span></div>
+                        <div class="detail-item"><strong>How to conduct</strong><span>Give 10 passes. Player must pass the ball through the target gate with correct weight and direction.</span></div>
+                        <div class="detail-item"><strong>Scoring</strong><span>Accuracy percentage = successful passes divided by total passes x 100. Example: 7 successful passes out of 10 = 70%.</span></div>
+                    </div>
+                </article>
+
+                <article class="test-card" data-number="09">
+                    <h3>Yo-Yo Intermittent Recovery Test</h3>
+                    <p>This test measures football endurance. Unlike a normal long run, it reflects match fitness because football requires repeated high-intensity runs with short recovery.</p>
+                    <div class="detail-list">
+                        <div class="detail-item"><strong>Setup</strong><span>Set a 20-meter running lane and a 5-meter recovery zone. Use the Yo-Yo audio beep track and keep players in clearly marked lanes.</span></div>
+                        <div class="detail-item"><strong>How to conduct</strong><span>Players run 20m out and 20m back before the beep, then walk/jog through the recovery zone. Speed increases as levels progress.</span></div>
+                        <div class="detail-item"><strong>Scoring</strong><span>Record the final level reached before the player misses the beep twice or cannot maintain the required pace. Higher level means better football stamina.</span></div>
+                    </div>
+                </article>
+
+                <article class="test-card white-card" data-number="10">
+                    <h3>Coach Testing Rules</h3>
+                    <p>These rules keep testing fair and professional for all players across all Hindustan United batches and locations.</p>
+                    <div class="detail-list">
+                        <div class="detail-item"><strong>Before Testing</strong><ul><li>Warm up for 10–12 minutes.</li><li>Explain and demonstrate the route once.</li><li>Use the same surface, cones, distance, and timing process.</li></ul></div>
+                        <div class="detail-item"><strong>During Testing</strong><ul><li>Give clear start signals.</li><li>Allow proper rest between sprint attempts.</li><li>Record results immediately to avoid confusion.</li></ul></div>
+                        <div class="detail-item"><strong>After Testing</strong><ul><li>Share one strength and one improvement area with the player.</li><li>Compare players mainly with their own previous score, not only with other players.</li><li>Repeat the same test cycle every month.</li></ul></div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <footer class="footer-note">
+            <strong>Note:</strong> This calculator is a practical academy report tool. Benchmarks can be adjusted later based on Hindustan United’s real monthly testing data for each age group.
+        </footer>
+    </div>
+
+    <script>
+        const metricKeys = ['sprint10', 'sprint30', 'illinois', 'ttest', 'slalom', 'fig8', 'wallpass', 'target', 'yoyo'];
+
+        const units = {
+            sprint10: 's',
+            sprint30: 's',
+            illinois: 's',
+            ttest: 's',
+            slalom: 's',
+            fig8: 'laps',
+            wallpass: 'hits',
+            target: '%',
+            yoyo: 'level'
+        };
+
+        const labels = {
+            FWD: 'Attacker',
+            MID: 'Midfielder',
+            DEF: 'Defender'
+        };
+
+        const benchmarks = {
+            sprint10: { best: 1.5, worst: 3.5, lowerBetter: true },
+            sprint30: { best: 4.2, worst: 7.0, lowerBetter: true },
+            illinois: { best: 14.5, worst: 21.0, lowerBetter: true },
+            ttest: { best: 9.5, worst: 14.0, lowerBetter: true },
+            slalom: { best: 8.5, worst: 16.0, lowerBetter: true },
+            fig8: { best: 10, worst: 3, lowerBetter: false },
+            wallpass: { best: 35, worst: 10, lowerBetter: false },
+            target: { best: 90, worst: 30, lowerBetter: false },
+            yoyo: { best: 19, worst: 7, lowerBetter: false }
+        };
+
+        function todayValue() {
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function formatDisplayDate(dateValue) {
+            if (!dateValue) return 'Test Date';
+            const date = new Date(`${dateValue}T00:00:00`);
+            return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function safeNumber(value, fallback = 0) {
+            const number = parseFloat(value);
+            return Number.isFinite(number) ? number : fallback;
+        }
+
+        function clamp(number, min, max) {
+            return Math.max(min, Math.min(max, number));
+        }
+
+        function calcScore(value, benchmark, ageModifier) {
+            const adjustedBest = benchmark.best * ageModifier;
+            const adjustedWorst = benchmark.worst * ageModifier;
+            let score;
+
+            if (benchmark.lowerBetter) {
+                score = ((adjustedWorst - value) / (adjustedWorst - adjustedBest)) * 98 + 1;
+            } else {
+                score = ((value - adjustedWorst) / (adjustedBest - adjustedWorst)) * 98 + 1;
+            }
+
+            return clamp(Math.round(score), 1, 99);
+        }
+
+        function bandForScore(score) {
+            if (score >= 90) return { label: 'Elite', title: 'Elite Performance Band', text: 'Excellent academy result. Maintain intensity and start focusing on advanced match-specific details.' };
+            if (score >= 80) return { label: 'Advanced', title: 'Advanced Performance Band', text: 'Strong result. The player is showing competitive potential with clear strengths to build around.' };
+            if (score >= 65) return { label: 'Academy', title: 'Academy Development Band', text: 'Good base. Continue structured training and target the weakest score for faster improvement.' };
+            if (score >= 50) return { label: 'Developing', title: 'Developing Performance Band', text: 'The player needs consistent technical and physical training. Focus on basics and retest monthly.' };
+            return { label: 'Foundation', title: 'Foundation Performance Band', text: 'Start with fundamentals, coordination, and ball confidence. Improvement can be fast with regular training.' };
+        }
+
+        function updateRawRows(values) {
+            document.getElementById('raw-sprint10').innerText = `${values.sprint10.toFixed(1)} s`;
+            document.getElementById('raw-sprint30').innerText = `${values.sprint30.toFixed(1)} s`;
+            document.getElementById('raw-illinois').innerText = `${values.illinois.toFixed(1)} s`;
+            document.getElementById('raw-ttest').innerText = `${values.ttest.toFixed(1)} s`;
+            document.getElementById('raw-slalom').innerText = `${values.slalom.toFixed(1)} s`;
+            document.getElementById('raw-fig8').innerText = `${values.fig8} laps`;
+            document.getElementById('raw-wallpass').innerText = `${values.wallpass} hits`;
+            document.getElementById('raw-target').innerText = `${values.target}%`;
+            document.getElementById('raw-yoyo').innerText = `Level ${values.yoyo}`;
+        }
+
+        function calculateReport() {
+            const ageSelect = document.getElementById('in-age');
+            const position = document.getElementById('in-pos').value;
+            const ageModifier = parseFloat(ageSelect.value);
+            const playerName = document.getElementById('in-name').value.trim() || 'Player Name';
+            const ground = document.getElementById('in-ground').value.trim() || 'Ground';
+            const testDate = document.getElementById('in-date').value;
+
+            document.getElementById('out-name').innerText = playerName;
+            document.getElementById('out-position').innerText = labels[position].toUpperCase();
+            document.getElementById('out-age').innerText = ageSelect.options[ageSelect.selectedIndex].text;
+            document.getElementById('out-ground').innerText = ground;
+            document.getElementById('out-date').innerText = formatDisplayDate(testDate);
+
+            const values = {};
+            const scores = {};
+
+            metricKeys.forEach((key) => {
+                const input = document.getElementById(`num-${key}`);
+                values[key] = safeNumber(input.value, safeNumber(input.defaultValue, 0));
+                scores[key] = calcScore(values[key], benchmarks[key], ageModifier);
+            });
+
+            const PAC = Math.round((scores.sprint10 + scores.sprint30) / 2);
+            const AGI = Math.round((scores.illinois + scores.ttest) / 2);
+            const DRI = Math.round((scores.slalom + scores.fig8) / 2);
+            const PAS = Math.round((scores.wallpass + scores.target) / 2);
+            const STA = scores.yoyo;
+
+            let ovr;
+            if (position === 'FWD') {
+                ovr = (PAC * 0.30) + (DRI * 0.30) + (PAS * 0.15) + (AGI * 0.15) + (STA * 0.10);
+            } else if (position === 'MID') {
+                ovr = (PAS * 0.30) + (STA * 0.25) + (DRI * 0.20) + (AGI * 0.15) + (PAC * 0.10);
+            } else {
+                ovr = (PAC * 0.25) + (AGI * 0.25) + (PAS * 0.20) + (STA * 0.20) + (DRI * 0.10);
+            }
+
+            const roundedOvr = Math.round(ovr);
+            const band = bandForScore(roundedOvr);
+
+            document.getElementById('out-pac').innerText = PAC;
+            document.getElementById('out-agi').innerText = AGI;
+            document.getElementById('out-dri').innerText = DRI;
+            document.getElementById('out-pas').innerText = PAS;
+            document.getElementById('out-sta').innerText = STA;
+            document.getElementById('out-ovr').innerText = roundedOvr;
+            document.getElementById('out-band').innerText = band.label;
+            document.getElementById('out-band-title').innerText = band.title;
+            document.getElementById('out-insight').innerText = band.text;
+
+            updateRawRows(values);
+        }
+
+        function syncRangeAndNumber(key) {
+            const slider = document.getElementById(`slide-${key}`);
+            const number = document.getElementById(`num-${key}`);
+
+            slider.addEventListener('input', () => {
+                number.value = slider.value;
+                calculateReport();
+            });
+
+            number.addEventListener('input', () => {
+                slider.value = number.value;
+                calculateReport();
+            });
+        }
+
+        function downloadReportPNG() {
+            const element = document.getElementById('player-report-card');
+            const playerName = document.getElementById('in-name').value.trim() || 'Hindustan_United_Player';
+            const fileName = `${playerName.replace(/\s+/g, '_')}_Player_Test_Report.png`;
+
+            html2canvas(element, {
+                scale: 3,
+                backgroundColor: '#ffffff',
+                useCORS: true
+            }).then((canvas) => {
+                const link = document.createElement('a');
+                link.download = fileName;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        metricKeys.forEach(syncRangeAndNumber);
+        ['in-name', 'in-age', 'in-pos', 'in-date', 'in-ground'].forEach((id) => {
+            document.getElementById(id).addEventListener('input', calculateReport);
+            document.getElementById(id).addEventListener('change', calculateReport);
+        });
+
+        // ── Save to Neon (persist a report so it can be re-opened with its customization) ──
+        async function saveReport() {
+            const btn = document.getElementById('save-btn');
+            const msg = document.getElementById('save-msg');
+            const ageSel = document.getElementById('in-age');
+            const payload = {
+                player_name: document.getElementById('in-name').value.trim() || 'Player Name',
+                age_group: ageSel.options[ageSel.selectedIndex].text,
+                position: document.getElementById('in-pos').value,
+                test_date: document.getElementById('in-date').value || null,
+                ground: document.getElementById('in-ground').value.trim() || null,
+                raw: {},
+                scores: {
+                    pace: +document.getElementById('out-pac').innerText,
+                    agility: +document.getElementById('out-agi').innerText,
+                    dribbling: +document.getElementById('out-dri').innerText,
+                    passing: +document.getElementById('out-pas').innerText,
+                    stamina: +document.getElementById('out-sta').innerText,
+                    ovr: +document.getElementById('out-ovr').innerText,
+                    band: document.getElementById('out-band').innerText
+                }
+            };
+            metricKeys.forEach((k) => { payload.raw[k] = safeNumber(document.getElementById('num-' + k).value); });
+
+            btn.disabled = true; btn.textContent = 'Saving…'; msg.textContent = '';
+            try {
+                const r = await fetch('/api/save-report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await r.json();
+                if (!r.ok) throw new Error(data.error || 'Save failed');
+                const link = `${location.origin}${location.pathname}?id=${data.id}`;
+                history.replaceState(null, '', `?id=${data.id}`);
+                msg.innerHTML = `✓ Saved. Re-open / share this report: <a href="${link}" style="color:var(--yellow);font-weight:700">${link}</a>`;
+                btn.textContent = 'Saved ✓';
+                setTimeout(() => { btn.disabled = false; btn.textContent = 'Save to Academy'; }, 2500);
+            } catch (e) {
+                msg.textContent = e.message || 'Could not save. Please try again.';
+                btn.disabled = false; btn.textContent = 'Save to Academy';
+            }
+        }
+
+        // ── Load a saved report from ?id= (re-open with the exact customization) ──
+        async function loadReport(id) {
+            try {
+                const r = await fetch('/api/get-report?id=' + encodeURIComponent(id));
+                if (!r.ok) return false;
+                const d = await r.json();
+                document.getElementById('in-name').value = d.player_name || '';
+                document.getElementById('in-ground').value = d.ground || '';
+                if (d.test_date) document.getElementById('in-date').value = d.test_date;
+                if (d.position) document.getElementById('in-pos').value = d.position;
+                const ageSel = document.getElementById('in-age');
+                [...ageSel.options].forEach((o, i) => { if (o.text === d.age_group) ageSel.selectedIndex = i; });
+                metricKeys.forEach((k) => {
+                    if (d.raw && d.raw[k] != null) {
+                        document.getElementById('num-' + k).value = d.raw[k];
+                        document.getElementById('slide-' + k).value = d.raw[k];
+                    }
+                });
+                calculateReport();
+                return true;
+            } catch (e) { return false; }
+        }
+
+        // ── Init ──
+        (function init() {
+            const reportId = new URLSearchParams(location.search).get('id');
+            if (reportId) {
+                loadReport(reportId).then((ok) => {
+                    if (!ok) { document.getElementById('in-date').value = todayValue(); calculateReport(); }
+                });
+            } else {
+                document.getElementById('in-date').value = todayValue();
+                calculateReport();
+            }
+        })();
+    </script>
+</body>
+</html>
