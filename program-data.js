@@ -1,4 +1,4 @@
-// 30-Day Summer Training Program data — Hindustan United Sports
+// 30-Day Training Program data — Hindustan United Sports
 // (extracted verbatim from the academy program prototype)
 
 const WEEKS = {
