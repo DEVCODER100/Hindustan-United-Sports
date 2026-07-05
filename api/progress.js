@@ -1,5 +1,5 @@
 // GET /api/progress?id=123
-// Returns { name, position, completed_days, start_date } for a player.
+// Returns { name, completed_days, last_completed_at } for a player.
 import { sql } from './_db.js';
 
 export default async function handler(req, res) {
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
       return;
     }
     const rows = await sql`
-      SELECT name, position, completed_days, start_date
+      SELECT name, completed_days, last_completed_at
       FROM players WHERE id = ${id}
     `;
     if (rows.length === 0) {
@@ -24,9 +24,8 @@ export default async function handler(req, res) {
     const p = rows[0];
     res.status(200).json({
       name: p.name,
-      position: p.position,
       completed_days: p.completed_days || [],
-      start_date: p.start_date,
+      last_completed_at: p.last_completed_at,
     });
   } catch (e) {
     res.status(500).json({ error: 'Could not load progress.' });

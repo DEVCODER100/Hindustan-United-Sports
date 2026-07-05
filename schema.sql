@@ -2,14 +2,17 @@
 -- Run this ONCE in the Neon SQL editor (https://console.neon.tech).
 
 CREATE TABLE IF NOT EXISTS players (
-  id             BIGSERIAL PRIMARY KEY,
-  name           TEXT NOT NULL,
-  phone          TEXT NOT NULL,
-  whatsapp       TEXT NOT NULL,
-  position       TEXT,
-  start_date     DATE        DEFAULT CURRENT_DATE,
-  completed_days INT[]       DEFAULT '{}',     -- finished day numbers, e.g. {1,2,3}
-  created_at     TIMESTAMPTZ DEFAULT now()
+  id                BIGSERIAL PRIMARY KEY,
+  name              TEXT NOT NULL,
+  phone             TEXT NOT NULL,
+  dob               DATE,               -- date of birth
+  city              TEXT,
+  whatsapp          TEXT,               -- legacy / optional
+  position          TEXT,               -- legacy / optional
+  start_date        DATE        DEFAULT CURRENT_DATE,
+  completed_days    INT[]       DEFAULT '{}',   -- finished day numbers, e.g. {1,2,3}
+  last_completed_at TIMESTAMPTZ,               -- drives the 4-hour cooldown between days
+  created_at        TIMESTAMPTZ DEFAULT now()
 );
 
 -- Quick views for the academy owner:

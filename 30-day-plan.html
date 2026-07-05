@@ -46,17 +46,12 @@
             <input type="tel" id="f-phone" name="phone" placeholder="+91 ..." required />
           </div>
           <div class="field">
-            <label for="f-wa">WhatsApp Number</label>
-            <input type="tel" id="f-wa" name="whatsapp" placeholder="+91 ..." required />
+            <label for="f-dob">Date of Birth</label>
+            <input type="date" id="f-dob" name="dob" required />
           </div>
           <div class="field">
-            <label>Position</label>
-            <div class="pos-row" id="posRow">
-              <button type="button" class="pos-btn" data-pos="GK">GK</button>
-              <button type="button" class="pos-btn" data-pos="DEF">DEF</button>
-              <button type="button" class="pos-btn" data-pos="MID">MID</button>
-              <button type="button" class="pos-btn" data-pos="FWD">FWD</button>
-            </div>
+            <label for="f-city">City</label>
+            <input type="text" id="f-city" name="city" placeholder="e.g. Vadodara" maxlength="60" required />
           </div>
           <button type="submit" class="btn btn-gold btn-block" id="enrollBtn">Start Day 1 →</button>
         </form>
@@ -90,12 +85,14 @@
     const API = ''; // same-origin Vercel functions
     const LS_KEY = 'hus_player_id';
     const TOTAL_DAYS = 28;
+    const COOLDOWN_MS = 4 * 60 * 60 * 1000; // 4 hours between days
 
     // State
     let playerId = localStorage.getItem(LS_KEY);
-    let completed = new Set();   // day numbers 1..28
+    let completed = new Set();            // day numbers 1..28
+    let lastCompletedAt = null;           // Date of the most recent completion
     let curWeek = 1, curDay = 1;
-    let selectedPos = '';
+    let countdown = null;                 // active cooldown interval
 
     // Elements
     const $ = (id) => document.getElementById(id);
@@ -103,6 +100,25 @@
 
     const dayNum = (w, d) => (w - 1) * 7 + d;       // '1-1' -> 1, '4-7' -> 28
     const dayKey = (w, d) => `${w}-${d}`;
+
+    // The next day the player is allowed to complete (strictly sequential).
+    const nextDayNum = () => (completed.size ? Math.max(...completed) + 1 : 1);
+    // A week (1..4) is open only once the previous week is fully complete.
+    const weekUnlocked = (w) => {
+      if (w <= 1) return true;
+      for (let d = (w - 2) * 7 + 1; d <= (w - 1) * 7; d++) if (!completed.has(d)) return false;
+      return true;
+    };
+    // Milliseconds left on the 4-hour cooldown before the next day opens.
+    const cooldownRemaining = () => {
+      if (!lastCompletedAt || completed.size === 0) return 0;
+      return Math.max(0, lastCompletedAt.getTime() + COOLDOWN_MS - Date.now());
+    };
+    const fmtDuration = (ms) => {
+      const s = Math.max(0, Math.ceil(ms / 1000));
+      const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
+      return `${h}h ${String(m).padStart(2, '0')}m ${String(ss).padStart(2, '0')}s`;
+    };
 
     // ---------- Boot ----------
     async function boot() {
@@ -112,7 +128,8 @@
           if (!r.ok) throw new Error('not found');
           const data = await r.json();
           completed = new Set(data.completed_days || []);
-          showProgram(data.name, data.position);
+          lastCompletedAt = data.last_completed_at ? new Date(data.last_completed_at) : null;
+          showProgram(data.name);
           return;
         } catch (e) {
           localStorage.removeItem(LS_KEY);
@@ -129,20 +146,17 @@
     }
 
     // ---------- Enrollment ----------
-    $('posRow').addEventListener('click', (e) => {
-      const b = e.target.closest('.pos-btn');
-      if (!b) return;
-      selectedPos = b.dataset.pos;
-      document.querySelectorAll('.pos-btn').forEach(x => x.classList.toggle('sel', x === b));
-    });
-
     $('enrollForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const err = $('formError'); err.textContent = '';
       const name = $('f-name').value.trim();
       const phone = $('f-phone').value.trim();
-      const whatsapp = $('f-wa').value.trim();
-      if (!name || !phone || !whatsapp) { err.textContent = 'Please fill in name, phone and WhatsApp.'; return; }
+      const dob = $('f-dob').value.trim();
+      const city = $('f-city').value.trim();
+      if (!name || !phone || !dob || !city) {
+        err.textContent = 'Please fill in name, phone, date of birth and city.';
+        return;
+      }
 
       const btn = $('enrollBtn');
       btn.disabled = true; btn.textContent = 'Starting…';
@@ -150,14 +164,15 @@
         const r = await fetch(`${API}/api/enroll`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, phone, whatsapp, position: selectedPos }),
+          body: JSON.stringify({ name, phone, dob, city }),
         });
         const data = await r.json();
         if (!r.ok) throw new Error(data.error || 'Could not enrol.');
         playerId = data.id;
         localStorage.setItem(LS_KEY, playerId);
         completed = new Set(data.completed_days || []);
-        showProgram(name, selectedPos);
+        lastCompletedAt = data.last_completed_at ? new Date(data.last_completed_at) : null;
+        showProgram(name);
       } catch (e2) {
         err.textContent = e2.message || 'Something went wrong. Please try again.';
         btn.disabled = false; btn.textContent = 'Start Day 1 →';
@@ -165,38 +180,46 @@
     });
 
     // ---------- Program render ----------
-    function showProgram(name, pos) {
+    function showProgram(name) {
       setupEl.style.display = 'none';
       loadingEl.style.display = 'none';
       programEl.style.display = 'block';
       $('pName').textContent = name || 'Player';
-      $('pPos').textContent = (pos ? pos + ' · ' : '') + '30-Day Program';
+      $('pPos').textContent = '30-Day Program';
       $('pTotal').textContent = 'of ' + TOTAL_DAYS;
-      renderWeekTabs();
-      // Resume on the first incomplete day, else day 1.
-      let resume = 1; while (resume < TOTAL_DAYS && completed.has(resume)) resume++;
-      curWeek = Math.ceil(resume / 7); curDay = ((resume - 1) % 7) + 1;
-      renderDayRow(); renderDay(); updateProgress();
+      // Land on the week/day the player is currently up to.
+      const resume = Math.min(nextDayNum(), TOTAL_DAYS);
+      curWeek = Math.ceil(resume / 7);
+      curDay = ((resume - 1) % 7) + 1;
+      renderAll();
     }
+
+    function renderAll() { renderWeekTabs(); renderDayRow(); renderDay(); updateProgress(); }
 
     function renderWeekTabs() {
       const el = $('weekTabs'); el.innerHTML = '';
       for (let w = 1; w <= 4; w++) {
         const info = WEEKS[w];
+        const open = weekUnlocked(w);
         const b = document.createElement('button');
-        b.className = 'wtab' + (w === curWeek ? ' active' : '');
-        b.innerHTML = `WEEK ${w}<span class="wt-theme">${info.theme}</span>`;
-        b.onclick = () => { curWeek = w; curDay = 1; renderWeekTabs(); renderDayRow(); renderDay(); };
+        b.className = 'wtab' + (w === curWeek ? ' active' : '') + (open ? '' : ' locked');
+        b.innerHTML = `${open ? '' : '🔒 '}WEEK ${w}<span class="wt-theme">${info.theme}</span>`;
+        b.onclick = () => {
+          if (!weekUnlocked(w)) { flashLock(`Finish Week ${w - 1} to unlock Week ${w}.`); return; }
+          curWeek = w; curDay = 1; renderAll();
+        };
         el.appendChild(b);
       }
     }
 
     function renderDayRow() {
       const el = $('dayRow'); el.innerHTML = '';
+      const next = nextDayNum();
       for (let d = 1; d <= 7; d++) {
         const n = dayNum(curWeek, d);
+        const locked = n > next; // future day not yet reachable
         const b = document.createElement('button');
-        b.className = 'dbtn' + (d === curDay ? ' active' : '') + (completed.has(n) ? ' done' : '');
+        b.className = 'dbtn' + (d === curDay ? ' active' : '') + (completed.has(n) ? ' done' : '') + (locked && !completed.has(n) ? ' locked' : '');
         b.innerHTML = `${n}<small>${DAY_LABELS[d - 1]}</small>`;
         b.onclick = () => { curDay = d; renderDayRow(); renderDay(); };
         el.appendChild(b);
@@ -204,6 +227,7 @@
     }
 
     function renderDay() {
+      if (countdown) { clearInterval(countdown); countdown = null; }
       const data = ALL_DAYS[dayKey(curWeek, curDay)];
       const n = dayNum(curWeek, curDay);
       const el = $('dayContent');
@@ -224,10 +248,23 @@
           </div>`).join('');
       }
 
-      const isDone = completed.has(n);
-      const cta = isDone
-        ? `<div class="day-done-msg">✓ Day ${n} completed — great work!</div>`
-        : `<button class="btn btn-gold btn-block" id="completeBtn">Mark Day ${n} Completed ✓</button>`;
+      const next = nextDayNum();
+      let cta;
+      if (completed.has(n)) {
+        cta = `<div class="day-done-msg">✓ Day ${n} completed — great work!</div>`;
+      } else if (n < next) {
+        cta = `<div class="day-done-msg">✓ Day ${n} completed</div>`;
+      } else if (n > next) {
+        cta = `<div class="day-locked-msg">🔒 Complete Day ${next} first to unlock this day.</div>`;
+      } else {
+        // n === next: the current completable day
+        const remaining = cooldownRemaining();
+        if (remaining > 0) {
+          cta = `<button class="btn btn-gold btn-block" id="completeBtn" disabled>🔒 Day ${n} unlocks in <span id="cd">${fmtDuration(remaining)}</span></button>`;
+        } else {
+          cta = `<button class="btn btn-gold btn-block" id="completeBtn">Mark Day ${n} Completed ✓</button>`;
+        }
+      }
 
       el.innerHTML = `
         <div class="day-card">
@@ -238,7 +275,31 @@
         </div>`;
 
       const cb = $('completeBtn');
-      if (cb) cb.onclick = () => markComplete(n, cb);
+      if (cb && !cb.disabled) {
+        cb.onclick = () => markComplete(n, cb);
+      } else if (cb && cb.disabled) {
+        // live countdown; re-render (enables the button) when it hits zero
+        countdown = setInterval(() => {
+          const rem = cooldownRemaining();
+          const cd = $('cd');
+          if (rem <= 0) { clearInterval(countdown); countdown = null; renderDay(); }
+          else if (cd) cd.textContent = fmtDuration(rem);
+        }, 1000);
+      }
+    }
+
+    let lockMsgTimer = null;
+    function flashLock(text) {
+      let el = $('lockMsg');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'lockMsg'; el.className = 'lock-toast';
+        document.body.appendChild(el);
+      }
+      el.textContent = '🔒 ' + text;
+      el.classList.add('show');
+      clearTimeout(lockMsgTimer);
+      lockMsgTimer = setTimeout(() => el.classList.remove('show'), 2600);
     }
 
     async function markComplete(n, btn) {
@@ -250,12 +311,16 @@
           body: JSON.stringify({ id: playerId, day: n }),
         });
         const data = await r.json();
-        if (!r.ok) throw new Error(data.error || 'Could not save.');
-        completed = new Set(data.completed_days || []);
-        renderWeekTabs(); renderDayRow(); renderDay(); updateProgress();
+        if (data.completed_days) completed = new Set(data.completed_days);
+        if (data.last_completed_at) lastCompletedAt = new Date(data.last_completed_at);
+        if (!r.ok) {
+          if (r.status === 429) { flashLock('Next day is still on cooldown.'); renderAll(); return; }
+          throw new Error(data.error || 'Could not save.');
+        }
+        renderAll();
       } catch (e) {
         btn.disabled = false; btn.textContent = `Mark Day ${n} Completed ✓`;
-        alert(e.message || 'Could not save progress. Please try again.');
+        flashLock(e.message || 'Could not save progress. Please try again.');
       }
     }
 
